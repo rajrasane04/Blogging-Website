@@ -3,13 +3,25 @@ import logo from "../imgs/logo.png"
 import AnimationWrapper from "../common/page-animation";
 import defaultBanner from "../imgs/blog banner.png"
 import { uploadImage } from "../common/aws";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {Toaster ,toast} from 'react-hot-toast' ;
-
+import { EditorContext } from "../pages/editor.pages";
+import EditorJS from "@editorjs/editorjs";
+import tools from "./tools.component"
 
 const BlogEditor = () => {
 
-    const [blogBanner, setBlogBanner] = useState(defaultBanner);
+    let { blog , blog : {title , banner , content , tags , des} , setBlog} = useContext(EditorContext)
+
+    // useEffect
+    useEffect(() => {
+        let editor = new EditorJS({
+            holderId:"textEditor",
+            data : '',
+            tools : tools,
+            placeholder : "Let's write an awesome story"
+        })
+    },[])
 
     const handleBannerUpload = (e) => {
         
@@ -24,8 +36,9 @@ const BlogEditor = () => {
                 if(url){
 
                     toast.dismiss(loadingToast)
-                    setBlogBanner(url);
                     toast.success("Uploaded 👍");
+
+                    setBlog({ ...blog , banner : url})
 
                 }
             })
@@ -48,17 +61,26 @@ const BlogEditor = () => {
 
         input.style.height = 'auto' ;
         input.style.height = input.scrollHeight + "px";
+
+        setBlog({ ...blog , title:input.value})
+    }
+
+
+    const handleError = (e) => {
+        let img = e.target;
+        
+        img.src = defaultBanner;
     }
 
     return (
         <>
             <nav className="navbar">
-                <Link to="/">
-                    <img src={logo} className="flex-none w-10"/>
+                <Link to="/" className="flex-none w-10">
+                    <img src={logo} />
                 </Link>
 
                 <p className="max-md:hidden text-black line-clamp-1 w-full ">
-                    New Blog
+                    {title.length ? title : "New Blog"}
                 </p>
 
                 <div className="flex gap-4 ml-auto">
@@ -80,8 +102,8 @@ const BlogEditor = () => {
                     <div className="mx-auto max-w-[900px] w-full ">
                         <div className="relative aspect-video hover:opacity-80 bg-white border-4 border-grey">
                             <label htmlFor="uploadBanner">
-                                <img                              
-                                    src={blogBanner} 
+                                <img                            onError={handleError}  
+                                    src={banner} 
                                     className="z-20"
                                 />
                                 <input
@@ -99,9 +121,14 @@ const BlogEditor = () => {
                             className="text-4xl font-medium w-full h-20 outline-none resize-none mt-10 leading-tight placeholder:opacity-40"
                             onKeyDown={handleTitleKeyDown}
                             onChange={handleTitleChange}
-                        >
-                            
-                        </textarea>
+                        ></textarea>
+
+                        <hr className="w-full opacity-10 my-5"/>
+
+                        <div id="textEditor" className="font-gelasio"></div>
+
+
+
                     </div>
                 </section>
             </AnimationWrapper>
