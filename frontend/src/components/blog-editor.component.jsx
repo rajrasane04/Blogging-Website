@@ -11,16 +11,16 @@ import tools from "./tools.component"
 
 const BlogEditor = () => {
 
-    let { blog , blog : {title , banner , content , tags , des} , setBlog} = useContext(EditorContext)
+    let { blog , blog : {title , banner , content , tags , des} , setBlog ,textEditor , setTextEditor , setEditorState} = useContext(EditorContext)
 
     // useEffect
     useEffect(() => {
-        let editor = new EditorJS({
+        setTextEditor(new EditorJS({
             holderId:"textEditor",
             data : '',
             tools : tools,
             placeholder : "Let's write an awesome story"
-        })
+        }))
     },[])
 
     const handleBannerUpload = (e) => {
@@ -72,6 +72,31 @@ const BlogEditor = () => {
         img.src = defaultBanner;
     }
 
+    const handlePublishEvent = () => {
+
+        if(!banner.length){
+            return toast.error("Upload a blog banner to publish it")
+        }
+
+        if(!title.length){
+            return toast.error("Write blog title to publish it")
+        }
+
+        if(textEditor.isReady){
+            textEditor.save().then(data => {
+                if(data.blocks.length){
+                    setBlog({...blog,content : data});
+                    setEditorState("publish")
+                }else{
+                    return toast.error("Write something in your blog to publish it")
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+        }
+    }
+
     return (
         <>
             <nav className="navbar">
@@ -85,7 +110,9 @@ const BlogEditor = () => {
 
                 <div className="flex gap-4 ml-auto">
 
-                    <button className="btn-dark py-2">
+                    <button className="btn-dark py-2"
+                        onClick={handlePublishEvent}
+                    >
                         Publish
                     </button>
                     
