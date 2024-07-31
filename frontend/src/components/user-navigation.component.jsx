@@ -18,7 +18,7 @@ const UserNavigationPanel = () => {
             transition={{ duration : 0.2 }}
             className="absolute right-0 z-50"
         >
-            <div className="bg-white absolute right-0 border border-grey w-60 duration-200">
+            <div className="bg-white absolute right-0 border border-grey w-60 duration-200 rounded-3xl">
 
                 <Link to="/editor" className="flex gap-2 link md:hidden pl-8 py-4">
                     <i className="fi fi-rr-file-edit"></i>
