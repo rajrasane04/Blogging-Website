@@ -51,6 +51,10 @@ const generateUploadURL = async () => {
     })
 }
 
+const verifyJWT = (req,res,next) => {
+    
+}
+
 const formatDatatoSend = (user) => {
     const access_token = jwt.sign({ id : user._id}, process.env.SECRET_ACCESS_KEY)
 
@@ -221,6 +225,11 @@ server.post("/google-auth", async (req , res) => {
         return res.status(500).json({"error" : "Failed to authentic with google. Try with some other google account"})
     })
 
+})
+
+server.post('/create-blog', verifyJWT,(req,res)=>{
+
+    return res.json(req.body)
 })
 
 server.listen(PORT,()=>{
